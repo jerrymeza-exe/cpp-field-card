@@ -1,0 +1,622 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="A filterable C++ STL cheat sheet for NeetCode problems, with pattern templates and modern C++.">
+<style>
+:root { color-scheme: light; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; font: 14px/1.5 system-ui, sans-serif; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+<title>C++ Field Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a laminated field reference card. A sticky index bar with a filter, then stacked
+   panels: call tables with cost chips, and code cards in a grid that drops to one column on phones. */
+:root {
+  --paper: #edf0f3;
+  --panel: #fbfcfd;
+  --ink: #142029;
+  --muted: #56646f;
+  --rule: #d3dae1;
+  --accent: #1c4fd8;
+  --accent-soft: #e2e9fb;
+  --code-bg: #f2f4f7;
+  --warn: #8a5100;
+  --warn-soft: #fcefd0;
+  --fast: #0a6a62;
+  --fast-soft: #d6efea;
+  --mid: #46525e;
+  --mid-soft: #e4e8ec;
+  --slow: #ab2718;
+  --slow-soft: #fae1dc;
+  --syn-kw: #1c4fd8;
+  --syn-type: #0a6a62;
+  --syn-str: #a03b0b;
+  --syn-num: #8a5100;
+  --syn-com: #6f7d89;
+  --syn-fn: #6a32c9;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Helvetica Neue", sans-serif;
+  --font-body: "IBM Plex Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --paper: #0e141a;
+  --panel: #141b23;
+  --ink: #e2e8ee;
+  --muted: #95a3b1;
+  --rule: #26313c;
+  --accent: #8aaaff;
+  --accent-soft: #1a2645;
+  --code-bg: #0b1015;
+  --warn: #f0b551;
+  --warn-soft: #2b2112;
+  --fast: #56d3c2;
+  --fast-soft: #102f2b;
+  --mid: #b6c1cd;
+  --mid-soft: #212b36;
+  --slow: #ff8f80;
+  --slow-soft: #3a1a16;
+  --syn-kw: #8aaaff;
+  --syn-type: #56d3c2;
+  --syn-str: #f2a97c;
+  --syn-num: #f0b551;
+  --syn-com: #6e7e8e;
+  --syn-fn: #c6a6ff;
+  color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0e141a;
+  --panel: #141b23;
+  --ink: #e2e8ee;
+  --muted: #95a3b1;
+  --rule: #26313c;
+  --accent: #8aaaff;
+  --accent-soft: #1a2645;
+  --code-bg: #0b1015;
+  --warn: #f0b551;
+  --warn-soft: #2b2112;
+  --fast: #56d3c2;
+  --fast-soft: #102f2b;
+  --mid: #b6c1cd;
+  --mid-soft: #212b36;
+  --slow: #ff8f80;
+  --slow-soft: #3a1a16;
+  --syn-kw: #8aaaff;
+  --syn-type: #56d3c2;
+  --syn-str: #f2a97c;
+  --syn-num: #f0b551;
+  --syn-com: #6e7e8e;
+  --syn-fn: #c6a6ff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; }
+.wrap { max-width: 1140px; margin: 0 auto; padding-inline: clamp(16px, 4vw, 40px); padding-block: 28px 72px; }
+code { font-family: var(--font-mono); font-size: 0.86em; }
+:not(pre) > code { background: var(--code-bg); border: 1px solid var(--rule); border-radius: 3px; padding: 0 4px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.masthead { display: grid; gap: 14px; padding-block: 8px 22px; }
+.kicker { font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 0; }
+h1 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.01em; font-size: clamp(2.8rem, 8vw, 4.6rem); line-height: 0.92; margin: 0; text-wrap: balance; }
+h1 .plus { color: var(--accent); }
+.lede { max-width: 64ch; color: var(--muted); font-size: 1.05rem; margin: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; font-size: 13px; color: var(--muted); }
+.legend span.item { display: inline-flex; gap: 6px; align-items: center; }
+
+.toolbar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); border-bottom: 1px solid var(--rule); padding-block: 10px; display: grid; gap: 8px; }
+.search { display: flex; gap: 10px; align-items: center; }
+.search input { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 14px; padding: 9px 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--panel); color: var(--ink); }
+.search input::placeholder { color: var(--muted); }
+.search input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.search .count { font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+nav.index { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: thin; }
+nav.index a { flex: none; font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 14px; color: var(--ink); text-decoration: none; padding: 3px 10px; border: 1px solid var(--rule); border-radius: 3px; background: var(--panel); }
+nav.index a:hover, nav.index a:focus-visible { border-color: var(--accent); color: var(--accent); outline: none; }
+
+section.panel { scroll-margin-top: 112px; padding-block: 34px 4px; display: grid; gap: 16px; }
+.panel-head { display: flex; align-items: baseline; gap: 8px 14px; flex-wrap: wrap; border-bottom: 2px solid var(--ink); padding-bottom: 6px; }
+.panel-head h2 { font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.03em; font-size: clamp(1.7rem, 4vw, 2.2rem); line-height: 1; margin: 0; text-wrap: balance; }
+.panel-head h2 code { background: none; border: none; padding: 0; font-weight: 600; text-transform: none; letter-spacing: 0; font-size: 0.78em; }
+.tag { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--accent); background: var(--accent-soft); padding: 2px 8px; border-radius: 3px; white-space: nowrap; }
+.intro { margin: 0; max-width: 72ch; color: var(--muted); }
+.block-title { font-family: var(--font-display); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; font-size: 15px; color: var(--muted); margin: 0 0 6px; }
+.block-title code { text-transform: none; letter-spacing: 0; }
+
+.table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th { text-align: left; font-family: var(--font-mono); font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); padding: 8px 12px; background: var(--code-bg); border-bottom: 1px solid var(--rule); }
+td { padding: 8px 12px; border-top: 1px solid var(--rule); vertical-align: top; }
+tbody tr:first-child td { border-top: none; }
+td.t-code code { background: none; border: none; padding: 0; font-size: 13px; color: var(--ink); }
+td.t-code { min-width: 15ch; }
+table.calls td.t-code:first-child { width: 42%; }
+td.t-cost, th.t-cost { width: 1%; white-space: nowrap; text-align: right; }
+.cost { display: inline-block; font-family: var(--font-mono); font-size: 12px; line-height: 1.6; padding: 0 7px; border-radius: 3px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.cost.fast { color: var(--fast); background: var(--fast-soft); }
+.cost.mid { color: var(--mid); background: var(--mid-soft); }
+.cost.slow { color: var(--slow); background: var(--slow-soft); }
+
+.note { margin: 0; font-size: 14px; color: var(--muted); padding: 10px 12px; border: 1px dashed var(--rule); border-radius: 4px; }
+.note b { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; margin-right: 8px; color: var(--accent); }
+.note.warn { background: var(--warn-soft); border-color: transparent; color: var(--ink); }
+.note.warn b { color: var(--warn); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 450px), 1fr)); gap: 14px; }
+.card { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.card-head { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-bottom: 1px dashed var(--rule); }
+.card-head h3 { margin: 0; font-size: 15px; font-weight: 600; flex: 1; min-width: 0; }
+.card-tag { font-family: var(--font-mono); font-size: 11px; color: var(--muted); white-space: nowrap; }
+.copy { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--accent); background: transparent; border: 1px solid var(--rule); border-radius: 3px; padding: 2px 8px; cursor: pointer; }
+.copy:hover { border-color: var(--accent); }
+.copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.card-note { margin: 0; padding: 9px 12px; font-size: 13.5px; color: var(--muted); border-bottom: 1px dashed var(--rule); }
+pre { margin: 0; padding: 12px 14px; overflow-x: auto; background: var(--code-bg); font-size: 13px; line-height: 1.55; flex: 1; tab-size: 4; }
+pre code { font-size: inherit; color: var(--ink); }
+
+.hljs-keyword, .hljs-meta .hljs-keyword { color: var(--syn-kw); font-weight: 600; }
+.hljs-type, .hljs-built_in { color: var(--syn-type); }
+.hljs-string, .hljs-meta .hljs-string, .hljs-char { color: var(--syn-str); }
+.hljs-number, .hljs-literal { color: var(--syn-num); }
+.hljs-comment { color: var(--syn-com); font-style: italic; }
+.hljs-title, .hljs-title.function_, .hljs-title.class_ { color: var(--syn-fn); }
+.hljs-meta { color: var(--syn-com); }
+
+.range { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 14px 16px 12px; display: grid; gap: 10px; overflow-x: auto; }
+.range-grid { display: grid; grid-template-columns: repeat(6, 54px); row-gap: 4px; width: max-content; padding-left: 1px; }
+.range-grid .cell { font-family: var(--font-mono); font-size: 15px; height: 38px; display: grid; place-items: center; border: 1px solid var(--ink); margin-left: -1px; background: var(--code-bg); font-variant-numeric: tabular-nums; }
+.range-grid .cell.past { border-style: dashed; border-color: var(--muted); color: var(--muted); background: transparent; font-size: 11px; }
+.range-grid .idx { font-family: var(--font-mono); font-size: 11px; color: var(--muted); text-align: center; }
+.range-grid .ptr { font-family: var(--font-mono); font-size: 12px; color: var(--accent); text-align: center; white-space: nowrap; }
+.range p { margin: 0; font-size: 14px; color: var(--muted); max-width: 70ch; }
+
+.traps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 330px), 1fr)); gap: 12px; }
+.trap { background: var(--panel); border: 1px solid var(--rule); border-radius: 4px; padding: 12px 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.trap h3 { margin: 0; font-size: 15px; font-weight: 600; display: flex; gap: 8px; align-items: baseline; }
+.trap h3::before { content: "!"; flex: none; display: inline-grid; place-items: center; width: 19px; height: 19px; border-radius: 3px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--warn); background: var(--warn-soft); transform: translateY(2px); }
+.trap p { margin: 0; font-size: 14px; color: var(--muted); }
+.trap .fix { color: var(--ink); }
+.trap .fix b { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--fast); margin-right: 8px; }
+
+.empty { padding: 40px 0; color: var(--muted); text-align: center; }
+footer { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--muted); }
+
+@media (max-width: 640px) {
+  body { font-size: 14.5px; }
+  .tag { margin-left: 0; }
+  table.stack, table.stack tbody, table.stack tr, table.stack td { display: block; width: auto !important; }
+  table.stack thead { display: none; }
+  table.stack tr { padding: 10px 12px; border-top: 1px solid var(--rule); }
+  table.stack tbody tr:first-child { border-top: none; }
+  table.stack td { padding: 2px 0; border: none; text-align: left; }
+  table.stack td.t-cost { padding-top: 4px; }
+  table.labeled td[data-label]:not(:first-child)::before { content: attr(data-label); display: block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+}
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="masthead">
+    <p class="kicker">NeetCode · LeetCode · C++17 and C++20</p>
+    <h1>C<span class="plus">++</span> Field Card</h1>
+    <p class="lede">The standard library calls NeetCode problems actually use, when to reach for each one, pattern templates you can adapt, and the modern C++ and concurrency topics that come up in C++ interviews and projects.</p>
+    <div class="legend"><span>Cost chips:</span><span class="item"><span class="cost fast">O(1)</span> constant or log</span><span class="item"><span class="cost mid">O(n)</span> linear to n log n</span><span class="item"><span class="cost slow">O(2ⁿ)</span> exponential or worst case</span><span class="item"><span class="cost fast">O(1)*</span> amortized</span></div>
+  </header>
+  <div class="toolbar">
+    <div class="search">
+      <label for="filter" class="visually-hidden">Filter the card</label>
+      <input id="filter" type="search" placeholder="Filter: try lower_bound, heap, pop, BFS…  ( / )" autocomplete="off" spellcheck="false">
+      <span class="count" id="filter-count"></span>
+    </div>
+    <nav class="index" aria-label="Sections"><a href="#pick">Pick a tool</a><a href="#basics">Basics</a><a href="#vector">vector</a><a href="#string">string</a><a href="#hash">Hash map / set</a><a href="#ordered">map / set</a><a href="#stack-queue">stack / queue</a><a href="#heap">Heap</a><a href="#algorithms">Algorithms</a><a href="#patterns">Patterns</a><a href="#pointers">Pointers</a><a href="#python">Python → C++</a><a href="#big-o">Big-O</a><a href="#modern">Modern C++</a><a href="#concurrency">Concurrency</a><a href="#gotchas">Gotchas</a></nav>
+  </div>
+  <main><section class="panel" id="pick" data-section><div class="panel-head"><h2>Pick the tool</h2><span class="tag">Start here</span></div><p class="intro">Find the clue in the problem statement, then reach for the matching container. Most NeetCode problems are one of these rows.</p><div data-block><div class="table-wrap"><table class="stack labeled"><thead><tr><th>When the problem says…</th><th>Reach for</th><th>Core move</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td data-label="When the problem says…">"Have I seen this before?" · duplicates · a pair that sums to target</td><td data-label="Reach for"><code>unordered_set</code> / <code>unordered_map</code></td><td data-label="Core move">Check <code>count(x)</code>, then insert</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Count letters or frequencies · anagrams</td><td data-label="Reach for"><code>int cnt[26]</code> or <code>unordered_map&lt;char, int&gt;</code></td><td data-label="Core move"><code>cnt[c - 'a']++</code></td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Sorted array, find a pair or triple</td><td data-label="Reach for">Two pointers on a <code>vector</code></td><td data-label="Core move">Move <code>l</code> or <code>r</code> based on the sum</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Longest or shortest contiguous substring / subarray</td><td data-label="Reach for">Sliding window</td><td data-label="Core move">Grow <code>r</code>; shrink <code>l</code> while the window is invalid</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Top k · k-th largest · running median</td><td data-label="Reach for"><code>priority_queue</code></td><td data-label="Core move">Keep a heap of size k</td><td class="t-cost"><span class="cost mid">O(n log k)</span></td></tr><tr data-entry><td data-label="When the problem says…">Matching brackets · next greater element · undo</td><td data-label="Reach for"><code>stack</code> (or a <code>vector</code>)</td><td data-label="Core move"><code>push</code>, then <code>top()</code> and <code>pop()</code></td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Fewest steps · nearest · spread level by level</td><td data-label="Reach for">BFS with a <code>queue</code></td><td data-label="Core move">Mark visited when you push</td><td class="t-cost"><span class="cost mid">O(V + E)</span></td></tr><tr data-entry><td data-label="When the problem says…">Count islands · explore everything connected</td><td data-label="Reach for">DFS (recursion or a <code>stack</code>)</td><td data-label="Core move">Visit, mark, recurse on neighbors</td><td class="t-cost"><span class="cost mid">O(V + E)</span></td></tr><tr data-entry><td data-label="When the problem says…">Prerequisites · build order · cycle in a directed graph</td><td data-label="Reach for">Topological sort</td><td data-label="Core move">Kahn's: queue every node with indegree 0</td><td class="t-cost"><span class="cost mid">O(V + E)</span></td></tr><tr data-entry><td data-label="When the problem says…">Merge groups · redundant connection · components</td><td data-label="Reach for">Union-find</td><td data-label="Core move"><code>find</code>, <code>unite</code></td><td class="t-cost"><span class="cost fast">~O(1)</span></td></tr><tr data-entry><td data-label="When the problem says…">Cheapest path when edges have weights</td><td data-label="Reach for">Dijkstra</td><td data-label="Core move">Min-heap of <code>{dist, node}</code></td><td class="t-cost"><span class="cost mid">O(E log V)</span></td></tr><tr data-entry><td data-label="When the problem says…">Sorted data · first value ≥ x</td><td data-label="Reach for"><code>lower_bound</code> or binary search</td><td data-label="Core move">Halve the range each step</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Overlapping intervals · meeting rooms</td><td data-label="Reach for"><code>sort</code>, then sweep</td><td data-label="Core move">Compare with the last merged interval</td><td class="t-cost"><span class="cost mid">O(n log n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Sorted keys with fast insert · floor or ceiling</td><td data-label="Reach for"><code>map</code> / <code>set</code></td><td data-label="Core move"><code>lower_bound(x)</code>, <code>prev(it)</code></td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Max or min of every window</td><td data-label="Reach for">Monotonic <code>deque</code></td><td data-label="Core move">Pop weaker values off the back</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td data-label="When the problem says…">Count ways · min cost · overlapping subproblems</td><td data-label="Reach for">Dynamic programming</td><td data-label="Core move"><code>vector&lt;int&gt; dp(n + 1)</code></td><td class="t-cost"><span class="cost mid">O(n·m)</span></td></tr><tr data-entry><td data-label="When the problem says…">All subsets · permutations · combinations</td><td data-label="Reach for">Backtracking</td><td data-label="Core move">Choose, recurse, un-choose with <code>pop_back()</code></td><td class="t-cost"><span class="cost slow">exponential</span></td></tr></tbody></table></div></div></section><section class="panel" id="basics" data-section><div class="panel-head"><h2>Basics you use every time</h2><span class="tag">Every problem</span></div><p class="intro">Loops, types and parameters. Getting these right removes most compile errors.</p><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Headers</h3><span class="card-tag">Setup</span><button class="copy" type="button" aria-label="Copy the Headers code">Copy</button></div><pre><code class="language-cpp">// LeetCode and NeetCode already include everything. In your own files:
+#include &lt;bits/stdc++.h&gt;   // GCC only: the whole standard library
+using namespace std;
+
+// Apple Clang on a Mac has no bits/stdc++.h. Include what you use:
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+#include &lt;algorithm&gt;   // sort, reverse, max_element, lower_bound
+#include &lt;numeric&gt;     // accumulate, iota
+#include &lt;climits&gt;     // INT_MAX, INT_MIN</code></pre></article></div><div data-block><h3 class="block-title">Loops and types</h3><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>for (int x : nums)</code></td><td data-label="What it does">Loop over values. Copies each one, which is fine for <code>int</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>for (auto&amp; row : grid)</code></td><td data-label="What it does">Loop by reference: no copy, and you can modify</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>for (const auto&amp; w : words)</code></td><td data-label="What it does">Read-only, no copy. Use for strings and vectors</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>auto x = expr;</code></td><td data-label="What it does">Let the compiler pick the type</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pair&lt;int, int&gt; p = {r, c};</code></td><td data-label="What it does">Two values. Read them with <code>p.first</code> and <code>p.second</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>auto [r, c] = p;</code></td><td data-label="What it does">Unpack a pair (structured bindings, C++17)</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>long long total = 0;</code></td><td data-label="What it does">64-bit integer. Use it when sums or products can pass about 2.1 billion</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>INT_MAX</code> · <code>INT_MIN</code> · <code>LLONG_MAX</code></td><td data-label="What it does">Starting values for "best so far" min and max</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>swap(a, b);</code></td><td data-label="What it does">Exchange two values</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>to_string(42)</code> · <code>stoi("42")</code></td><td data-label="What it does">Number to string, string to number</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>c - '0'</code></td><td data-label="What it does">Digit char to int: <code>'7' - '0'</code> is 7</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>c - 'a'</code></td><td data-label="What it does">Letter to an index 0–25 for a count array</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>(double)a / b</code></td><td data-label="What it does">Real division. <code>a / b</code> on two ints drops the fraction</td></tr></tbody></table></div></div><div data-block><h3 class="block-title">Function parameters</h3><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt;&amp; nums</code></td><td data-label="What it does">By reference: no copy, and changes reach the caller</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>const vector&lt;int&gt;&amp; nums</code></td><td data-label="What it does">By reference, read-only. The default for inputs you only read</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; nums</code></td><td data-label="What it does">By value: copies everything. Slow inside recursion</td></tr></tbody></table></div></div></section><section class="panel" id="vector" data-section><div class="panel-head"><h2><code>vector</code></h2><span class="tag">Week 3</span></div><p class="intro">A resizable array, and your default container. If you are unsure what to use, start here.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; v;</code></td><td data-label="What it does">Empty</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; v(n);</code></td><td data-label="What it does">n zeros</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; v(n, -1);</code></td><td data-label="What it does">n copies of -1</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; v = {3, 1, 2};</code></td><td data-label="What it does">From values</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;vector&lt;int&gt;&gt; g(rows, vector&lt;int&gt;(cols, 0));</code></td><td data-label="What it does">2D grid of zeros</td><td class="t-cost"><span class="cost mid">O(n·m)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.size()</code> · <code>v.empty()</code></td><td data-label="What it does">How many elements · is it empty</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v[i]</code></td><td data-label="What it does">Element at index i. No bounds check</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.front()</code> · <code>v.back()</code></td><td data-label="What it does">First · last element. <code>back()</code> is Python's <code>v[-1]</code></td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.push_back(x);</code></td><td data-label="What it does">Add to the end</td><td class="t-cost"><span class="cost fast">O(1)*</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.emplace_back(r, c);</code></td><td data-label="What it does">Build the element in place, e.g. in a <code>vector&lt;pair&lt;int, int&gt;&gt;</code></td><td class="t-cost"><span class="cost fast">O(1)*</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.pop_back();</code></td><td data-label="What it does">Remove the last element. Returns nothing</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.insert(v.begin() + i, x);</code></td><td data-label="What it does">Insert at index i; shifts everything after it</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.erase(v.begin() + i);</code></td><td data-label="What it does">Remove index i</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.clear();</code></td><td data-label="What it does">Remove everything</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.reserve(n);</code></td><td data-label="What it does">Allocate space up front when you know the final size</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.resize(n);</code></td><td data-label="What it does">Grow or shrink to n elements</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>return {a, b};</code></td><td data-label="What it does">Return a new vector from a function</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>vector&lt;int&gt; copy = v;</code></td><td data-label="What it does">A full, independent copy</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr></tbody></table></div></div><p class="note tip"><b>Tip</b><code>*</code> means amortized: <code>push_back</code> is O(1) on average and occasionally O(n) when the vector grows.</p></section><section class="panel" id="string" data-section><div class="panel-head"><h2><code>string</code></h2><span class="tag">Week 3</span></div><p class="intro">Works like a <code>vector&lt;char&gt;</code> with text helpers. Indexing gives you a <code>char</code>, not a string.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>s.size()</code></td><td data-label="What it does">Length. <code>s.length()</code> does the same thing; use <code>size()</code> everywhere</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s[i]</code></td><td data-label="What it does">The <code>char</code> at i</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s += c;</code> · <code>s.push_back(c);</code></td><td data-label="What it does">Append a char</td><td class="t-cost"><span class="cost fast">O(1)*</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s += "abc";</code></td><td data-label="What it does">Append a string</td><td class="t-cost"><span class="cost mid">O(k)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s.pop_back();</code></td><td data-label="What it does">Drop the last char</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s.substr(i, len)</code></td><td data-label="What it does">Copy of <code>len</code> chars starting at i. The second argument is a length, not an end index</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s.find("ab")</code></td><td data-label="What it does">Index of the first match, or <code>string::npos</code> if none</td><td class="t-cost"><span class="cost mid">O(n·m)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>string(n, 'x')</code></td><td data-label="What it does">n copies of 'x'</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>sort(s.begin(), s.end());</code></td><td data-label="What it does">Sort the chars. Makes an anagram key</td><td class="t-cost"><span class="cost mid">O(n log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>reverse(s.begin(), s.end());</code></td><td data-label="What it does">Reverse in place</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s == t</code> · <code>s &lt; t</code></td><td data-label="What it does">Compare by value, alphabetically</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>isalnum(c)</code> · <code>isalpha(c)</code> · <code>isdigit(c)</code></td><td data-label="What it does">Char tests from <code>&lt;cctype&gt;</code> (Valid Palindrome)</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>tolower(c)</code> · <code>toupper(c)</code></td><td data-label="What it does">Change case. Returns an <code>int</code>, so store it in a <code>char</code></td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>string(s.rbegin(), s.rend())</code></td><td data-label="What it does">Reversed copy</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>stringstream ss(s);</code> <code>while (ss &gt;&gt; word)</code></td><td data-label="What it does">Split on whitespace (<code>&lt;sstream&gt;</code>)</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr></tbody></table></div></div></section><section class="panel" id="hash" data-section><div class="panel-head"><h2><code>unordered_map</code> and <code>unordered_set</code></h2><span class="tag">Week 5</span></div><p class="intro">Average O(1) lookup. This is the answer to every "have I seen it?" question.</p><div data-block><h3 class="block-title">unordered_map: key → value (Python dict)</h3><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>unordered_map&lt;int, int&gt; m;</code></td><td data-label="What it does">Empty map</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>m[k] = v;</code></td><td data-label="What it does">Insert or overwrite</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>m[k]++;</code></td><td data-label="What it does">Count. A missing key starts at 0, like <code>defaultdict(int)</code></td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>m.count(k)</code></td><td data-label="What it does">1 if the key exists, else 0. Never inserts</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>m.contains(k)</code></td><td data-label="What it does">Same check, reads better. C++20</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>auto it = m.find(k);</code> <code>if (it != m.end())</code> <code>it-&gt;second</code></td><td data-label="What it does">Look up once, then use the value</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>m.erase(k);</code></td><td data-label="What it does">Remove a key</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>for (auto&amp; [key, val] : m)</code></td><td data-label="What it does">Loop over pairs. The order is random</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>unordered_map&lt;string, vector&lt;string&gt;&gt; groups;</code></td><td data-label="What it does">Group Anagrams: sorted word → its words</td><td class="t-cost"></td></tr></tbody></table></div></div><div data-block><h3 class="block-title">unordered_set: keys only (Python set)</h3><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>unordered_set&lt;int&gt; seen;</code></td><td data-label="What it does">Empty set</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>seen.insert(x);</code></td><td data-label="What it does">Add. Does nothing if x is already there</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>seen.count(x)</code></td><td data-label="What it does">1 if present, else 0</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>seen.erase(x);</code></td><td data-label="What it does">Remove</td><td class="t-cost"><span class="cost fast">O(1) avg</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>unordered_set&lt;int&gt; s(v.begin(), v.end());</code></td><td data-label="What it does">Build from a vector, dropping duplicates</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Two Sum: complement lookup</h3><span class="card-tag">Week 1</span><button class="copy" type="button" aria-label="Copy the Two Sum: complement lookup code">Copy</button></div><pre><code class="language-cpp">unordered_map&lt;int, int&gt; seen;              // value -&gt; index
+for (int i = 0; i &lt; (int)nums.size(); i++) {
+    int need = target - nums[i];
+    if (seen.count(need)) return {seen[need], i};
+    seen[nums[i]] = i;                     // store after checking
+}
+return {};</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Valid Anagram: count array</h3><span class="card-tag">Week 1</span><button class="copy" type="button" aria-label="Copy the Valid Anagram: count array code">Copy</button></div><p class="card-note">Faster than a map when the keys are 26 lowercase letters.</p><pre><code class="language-cpp">int cnt[26] = {};                          // all zeros
+for (char c : s) cnt[c - 'a']++;
+for (char c : t) cnt[c - 'a']--;
+for (int x : cnt)
+    if (x != 0) return false;
+return true;</code></pre></article></div><p class="note warn"><b>Watch out</b><code>unordered_map</code> can't use <code>pair&lt;int, int&gt;</code> as a key without a custom hash. For grid cells, use <code>map&lt;pair&lt;int, int&gt;, T&gt;</code> or encode the cell as <code>r * cols + c</code>.</p></section><section class="panel" id="ordered" data-section><div class="panel-head"><h2><code>map</code> and <code>set</code></h2><span class="tag">When order matters</span></div><p class="intro">Kept sorted by key. Each operation is O(log n) instead of O(1), and in exchange you get sorted iteration and floor/ceiling lookups.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>map&lt;int, int&gt; m;</code> · <code>set&lt;int&gt; s;</code></td><td data-label="What it does">Same calls as the unordered versions, kept sorted</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>*s.begin()</code></td><td data-label="What it does">Smallest element</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>*s.rbegin()</code></td><td data-label="What it does">Largest element</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s.lower_bound(x)</code></td><td data-label="What it does">Iterator to the first element ≥ x</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>s.upper_bound(x)</code></td><td data-label="What it does">Iterator to the first element &gt; x</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>prev(it)</code> · <code>next(it)</code></td><td data-label="What it does">Step an iterator back or forward</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>if (it != s.end())</code></td><td data-label="What it does">Always check before reading <code>*it</code></td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>multiset&lt;int&gt; ms;</code></td><td data-label="What it does">Sorted and allows duplicates</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>ms.erase(ms.find(x));</code></td><td data-label="What it does">Remove one copy of x. <code>ms.erase(x)</code> removes all of them</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>it-&gt;first</code> · <code>it-&gt;second</code></td><td data-label="What it does">Key and value from a <code>map</code> iterator</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Largest key ≤ t (floor)</h3><span class="card-tag">Phase 1</span><button class="copy" type="button" aria-label="Copy the Largest key ≤ t (floor) code">Copy</button></div><pre><code class="language-cpp">// Time Based Key-Value Store: history = timestamp -&gt; value
+auto it = history.upper_bound(t);          // first key &gt; t
+if (it == history.begin()) return "";      // nothing &lt;= t
+return prev(it)-&gt;second;</code></pre></article></div></section><section class="panel" id="stack-queue" data-section><div class="panel-head"><h2><code>stack</code>, <code>queue</code>, <code>deque</code></h2><span class="tag">Phase 1 · BFS in Phase 2</span></div><p class="intro">All three are O(1) at their ends. A <code>vector</code> also works as a stack (<code>push_back</code>, <code>back</code>, <code>pop_back</code>) and lets you index into it.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>stack&lt;int&gt; st;</code></td><td data-label="What it does">Last in, first out</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>st.push(x);</code> · <code>st.top()</code></td><td data-label="What it does">Add · look at the top</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>st.pop();</code></td><td data-label="What it does">Remove the top. Returns nothing, so read <code>top()</code> first</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>queue&lt;int&gt; q;</code></td><td data-label="What it does">First in, first out</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>q.push(x);</code> · <code>q.front()</code></td><td data-label="What it does">Add to the back · look at the next one out</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>q.pop();</code></td><td data-label="What it does">Remove the front. Returns nothing</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>deque&lt;int&gt; dq;</code></td><td data-label="What it does">Both ends (Python's <code>collections.deque</code>)</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>dq.push_back(x);</code> · <code>dq.push_front(x);</code></td><td data-label="What it does">Add at either end</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>dq.pop_back();</code> · <code>dq.pop_front();</code></td><td data-label="What it does">Remove from either end. <code>pop_front</code> is Python's <code>popleft</code></td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>dq.front()</code> · <code>dq.back()</code> · <code>dq[i]</code></td><td data-label="What it does">Read either end, or by index</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>.empty()</code> · <code>.size()</code></td><td data-label="What it does">On all three</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Valid Parentheses</h3><span class="card-tag">Stack</span><button class="copy" type="button" aria-label="Copy the Valid Parentheses code">Copy</button></div><pre><code class="language-cpp">stack&lt;char&gt; st;
+unordered_map&lt;char, char&gt; match = {{')', '('}, {']', '['}, {'}', '{'}};
+for (char c : s) {
+    if (!match.count(c)) { st.push(c); continue; }   // opening bracket
+    if (st.empty() || st.top() != match[c]) return false;
+    st.pop();
+}
+return st.empty();</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Sliding Window Maximum: monotonic deque</h3><span class="card-tag">Deque</span><button class="copy" type="button" aria-label="Copy the Sliding Window Maximum: monotonic deque code">Copy</button></div><pre><code class="language-cpp">deque&lt;int&gt; dq;                 // indices; values decrease front to back
+vector&lt;int&gt; out;
+for (int i = 0; i &lt; (int)nums.size(); i++) {
+    while (!dq.empty() &amp;&amp; nums[dq.back()] &lt;= nums[i]) dq.pop_back();
+    dq.push_back(i);
+    if (dq.front() &lt;= i - k) dq.pop_front();          // left the window
+    if (i &gt;= k - 1) out.push_back(nums[dq.front()]);
+}
+return out;</code></pre></article></div></section><section class="panel" id="heap" data-section><div class="panel-head"><h2><code>priority_queue</code></h2><span class="tag">Week 8</span></div><p class="intro">A heap. C++ gives you a <strong>max</strong>-heap by default, the opposite of Python's <code>heapq</code>.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>priority_queue&lt;int&gt; maxHeap;</code></td><td data-label="What it does">Largest on top</td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; minHeap;</code></td><td data-label="What it does">Smallest on top, like <code>heapq</code></td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pq.push(x);</code></td><td data-label="What it does">Add</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pq.top()</code></td><td data-label="What it does">Peek at the top</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pq.pop();</code></td><td data-label="What it does">Remove the top. Returns nothing</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pq.size()</code> · <code>pq.empty()</code></td><td data-label="What it does">Size checks</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>priority_queue&lt;pair&lt;int, int&gt;&gt; pq;</code></td><td data-label="What it does">Pairs compare by <code>first</code>, then <code>second</code></td><td class="t-cost"></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>pq.push(-x);</code></td><td data-label="What it does">Shortcut min-heap: push negatives into a max-heap, negate when you read</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>priority_queue&lt;int&gt; pq(v.begin(), v.end());</code></td><td data-label="What it does">Build from a vector</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Top K Frequent: min-heap of size k</h3><span class="card-tag">Week 1</span><button class="copy" type="button" aria-label="Copy the Top K Frequent: min-heap of size k code">Copy</button></div><pre><code class="language-cpp">unordered_map&lt;int, int&gt; freq;
+for (int x : nums) freq[x]++;
+
+// {count, value}; smallest count on top, so it's the one we drop
+priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; pq;
+for (auto&amp; [val, count] : freq) {
+    pq.push({count, val});
+    if ((int)pq.size() &gt; k) pq.pop();
+}
+vector&lt;int&gt; out;
+while (!pq.empty()) {
+    out.push_back(pq.top().second);
+    pq.pop();
+}
+return out;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Custom comparator</h3><span class="card-tag">K Closest Points</span><button class="copy" type="button" aria-label="Copy the Custom comparator code">Copy</button></div><pre><code class="language-cpp">// Answers "should a come out AFTER b?" It reads backwards from sort.
+auto cmp = [](const vector&lt;int&gt;&amp; a, const vector&lt;int&gt;&amp; b) {
+    return a[0] &gt; b[0];                    // smallest a[0] on top
+};
+priority_queue&lt;vector&lt;int&gt;, vector&lt;vector&lt;int&gt;&gt;, decltype(cmp)&gt; pq(cmp);
+pq.push({3, 7});
+pq.push({1, 9});                           // pq.top() is {1, 9}</code></pre></article></div></section><section class="panel" id="algorithms" data-section><div class="panel-head"><h2>Algorithms</h2><span class="tag">Week 26 · used daily</span></div><p class="intro">From <code>&lt;algorithm&gt;</code> and <code>&lt;numeric&gt;</code>. Most take a range: <code>v.begin(), v.end()</code> means "from the first element up to, but not including, the end."</p><div class="range" role="img" aria-label="A vector of five values. begin points at index 0; end points one past the last element, at index 5."><div class="range-grid"><div class="cell">3</div><div class="cell">1</div><div class="cell">4</div><div class="cell">1</div><div class="cell">5</div><div class="cell past">past end</div><div class="idx">0</div><div class="idx">1</div><div class="idx">2</div><div class="idx">3</div><div class="idx">4</div><div class="idx">5</div><div class="ptr" style="grid-column: 1">↑ v.begin()</div><div class="ptr" style="grid-column: 6">↑ v.end()</div></div><p><code>begin()</code> points at the first element. <code>end()</code> points one past the last, so the range is <code>[begin, end)</code>. That is why <code>it - v.begin()</code> turns an iterator into an index.</p></div><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th><th class="t-cost">Cost</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>sort(v.begin(), v.end());</code></td><td data-label="What it does">Ascending</td><td class="t-cost"><span class="cost mid">O(n log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>sort(v.begin(), v.end(), greater&lt;int&gt;());</code></td><td data-label="What it does">Descending</td><td class="t-cost"><span class="cost mid">O(n log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>sort(v.begin(), v.end(), [](const auto&amp; a, const auto&amp; b) { return a[1] &lt; b[1]; });</code></td><td data-label="What it does">Sort by a custom key, like Python's <code>key=</code>. Use <code>&lt;</code>, never <code>&lt;=</code></td><td class="t-cost"><span class="cost mid">O(n log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>reverse(v.begin(), v.end());</code></td><td data-label="What it does">Reverse in place</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>max(a, b)</code> · <code>min(a, b)</code></td><td data-label="What it does">Both arguments must have the same type</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>max({a, b, c})</code></td><td data-label="What it does">Max of several values</td><td class="t-cost"><span class="cost fast">O(1)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>*max_element(v.begin(), v.end())</code></td><td data-label="What it does">Largest value. The <code>*</code> reads the iterator</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>max_element(v.begin(), v.end()) - v.begin()</code></td><td data-label="What it does">Index of the largest value</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>accumulate(v.begin(), v.end(), 0LL)</code></td><td data-label="What it does">Sum. The start value sets the type: <code>0</code> sums in <code>int</code>, <code>0LL</code> in <code>long long</code></td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>count(v.begin(), v.end(), x)</code></td><td data-label="What it does">How many elements equal x</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>find(v.begin(), v.end(), x) != v.end()</code></td><td data-label="What it does">Does v contain x</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>lower_bound(v.begin(), v.end(), x) - v.begin()</code></td><td data-label="What it does">Index of the first value ≥ x in sorted v. Python's <code>bisect_left</code></td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>upper_bound(v.begin(), v.end(), x) - v.begin()</code></td><td data-label="What it does">Index of the first value &gt; x. Python's <code>bisect_right</code></td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>binary_search(v.begin(), v.end(), x)</code></td><td data-label="What it does">Only true or false</td><td class="t-cost"><span class="cost fast">O(log n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>v.erase(unique(v.begin(), v.end()), v.end());</code></td><td data-label="What it does">Remove duplicates. Sort first</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>iota(v.begin(), v.end(), 0);</code></td><td data-label="What it does">Fill with 0, 1, 2, … (union-find parents)</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>fill(v.begin(), v.end(), 0);</code></td><td data-label="What it does">Reset every element</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>next_permutation(v.begin(), v.end())</code></td><td data-label="What it does">Rearrange into the next permutation; false after the last one</td><td class="t-cost"><span class="cost mid">O(n)</span></td></tr></tbody></table></div></div></section><section class="panel" id="patterns" data-section><div class="panel-head"><h2>Pattern templates</h2><span class="tag">Weeks 1–19</span></div><p class="intro">Skeletons to adapt, not paste. The graph templates (grid BFS/DFS, topological sort, union-find, Dijkstra) are worth knowing cold.</p><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Two pointers on sorted input</h3><span class="card-tag">Week 2 · Two Sum II</span><button class="copy" type="button" aria-label="Copy the Two pointers on sorted input code">Copy</button></div><pre><code class="language-cpp">int l = 0, r = (int)nums.size() - 1;
+while (l &lt; r) {
+    int sum = nums[l] + nums[r];
+    if (sum == target) return {l + 1, r + 1};
+    if (sum &lt; target) l++;                 // need a bigger sum
+    else r--;                              // need a smaller sum
+}
+return {};</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Sliding window</h3><span class="card-tag">Week 3</span><button class="copy" type="button" aria-label="Copy the Sliding window code">Copy</button></div><pre><code class="language-cpp">// Longest Substring Without Repeating Characters
+unordered_set&lt;char&gt; window;
+int l = 0, best = 0;
+for (int r = 0; r &lt; (int)s.size(); r++) {
+    while (window.count(s[r])) window.erase(s[l++]);   // shrink until valid
+    window.insert(s[r]);
+    best = max(best, r - l + 1);
+}
+return best;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Binary search</h3><span class="card-tag">Phase 1</span><button class="copy" type="button" aria-label="Copy the Binary search code">Copy</button></div><pre><code class="language-cpp">int l = 0, r = (int)nums.size() - 1;
+while (l &lt;= r) {
+    int mid = l + (r - l) / 2;             // avoids overflow of l + r
+    if (nums[mid] == target) return mid;
+    if (nums[mid] &lt; target) l = mid + 1;
+    else r = mid - 1;
+}
+return -1;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Grid BFS: fewest steps</h3><span class="card-tag">Weeks 10–11</span><button class="copy" type="button" aria-label="Copy the Grid BFS: fewest steps code">Copy</button></div><pre><code class="language-cpp">int rows = grid.size(), cols = grid[0].size();
+vector&lt;vector&lt;bool&gt;&gt; seen(rows, vector&lt;bool&gt;(cols, false));
+queue&lt;pair&lt;int, int&gt;&gt; q;
+q.push({sr, sc});          // multi-source: push every start cell here
+seen[sr][sc] = true;
+int dirs[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+int steps = 0;
+while (!q.empty()) {
+    int levelSize = q.size();
+    for (int i = 0; i &lt; levelSize; i++) {
+        auto [r, c] = q.front();
+        q.pop();
+        if (r == er &amp;&amp; c == ec) return steps;
+        for (auto&amp; d : dirs) {
+            int nr = r + d[0], nc = c + d[1];
+            if (nr &lt; 0 || nr &gt;= rows || nc &lt; 0 || nc &gt;= cols) continue;
+            if (seen[nr][nc] || grid[nr][nc] == 1) continue;   // 1 = wall
+            seen[nr][nc] = true;   // mark on push, not on pop
+            q.push({nr, nc});
+        }
+    }
+    steps++;
+}
+return -1;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Grid DFS: Number of Islands</h3><span class="card-tag">Week 10</span><button class="copy" type="button" aria-label="Copy the Grid DFS: Number of Islands code">Copy</button></div><pre><code class="language-cpp">int rows = grid.size(), cols = grid[0].size();
+function&lt;void(int, int)&gt; dfs = [&amp;](int r, int c) {
+    if (r &lt; 0 || r &gt;= rows || c &lt; 0 || c &gt;= cols || grid[r][c] != '1') return;
+    grid[r][c] = '0';                      // mark visited by sinking the land
+    dfs(r + 1, c);
+    dfs(r - 1, c);
+    dfs(r, c + 1);
+    dfs(r, c - 1);
+};
+int islands = 0;
+for (int r = 0; r &lt; rows; r++)
+    for (int c = 0; c &lt; cols; c++)
+        if (grid[r][c] == '1') {
+            islands++;
+            dfs(r, c);
+        }
+return islands;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Topological sort (Kahn's)</h3><span class="card-tag">Weeks 13–14</span><button class="copy" type="button" aria-label="Copy the Topological sort (Kahn&#x27;s) code">Copy</button></div><pre><code class="language-cpp">// Course Schedule: {a, b} means take b before a, so the edge is b -&gt; a
+vector&lt;vector&lt;int&gt;&gt; adj(n);
+vector&lt;int&gt; indegree(n, 0);
+for (auto&amp; p : prerequisites) {
+    adj[p[1]].push_back(p[0]);
+    indegree[p[0]]++;
+}
+queue&lt;int&gt; q;
+for (int i = 0; i &lt; n; i++)
+    if (indegree[i] == 0) q.push(i);
+vector&lt;int&gt; order;
+while (!q.empty()) {
+    int u = q.front();
+    q.pop();
+    order.push_back(u);
+    for (int v : adj[u])
+        if (--indegree[v] == 0) q.push(v);
+}
+bool hasCycle = (int)order.size() != n;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Union-find</h3><span class="card-tag">Week 15</span><button class="copy" type="button" aria-label="Copy the Union-find code">Copy</button></div><pre><code class="language-cpp">struct DSU {
+    vector&lt;int&gt; parent, sz;
+    DSU(int n) : parent(n), sz(n, 1) { iota(parent.begin(), parent.end(), 0); }
+    int find(int x) {
+        while (parent[x] != x) {
+            parent[x] = parent[parent[x]];     // path halving
+            x = parent[x];
+        }
+        return x;
+    }
+    bool unite(int a, int b) {             // false if already connected
+        a = find(a);
+        b = find(b);
+        if (a == b) return false;
+        if (sz[a] &lt; sz[b]) swap(a, b);     // smaller tree under larger
+        parent[b] = a;
+        sz[a] += sz[b];
+        return true;
+    }
+};</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Dijkstra</h3><span class="card-tag">Week 16</span><button class="copy" type="button" aria-label="Copy the Dijkstra code">Copy</button></div><pre><code class="language-cpp">vector&lt;vector&lt;pair&lt;int, int&gt;&gt;&gt; adj(n);     // adj[u] = {v, weight}
+vector&lt;int&gt; dist(n, INT_MAX);
+// {distance, node}, smallest distance on top
+priority_queue&lt;pair&lt;int, int&gt;, vector&lt;pair&lt;int, int&gt;&gt;, greater&lt;pair&lt;int, int&gt;&gt;&gt; pq;
+dist[src] = 0;
+pq.push({0, src});
+while (!pq.empty()) {
+    auto [d, u] = pq.top();
+    pq.pop();
+    if (d &gt; dist[u]) continue;             // stale entry; already found shorter
+    for (auto [v, w] : adj[u]) {
+        if (d + w &lt; dist[v]) {
+            dist[v] = d + w;
+            pq.push({dist[v], v});
+        }
+    }
+}</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Intervals: Merge Intervals</h3><span class="card-tag">Week 17</span><button class="copy" type="button" aria-label="Copy the Intervals: Merge Intervals code">Copy</button></div><pre><code class="language-cpp">sort(intervals.begin(), intervals.end());  // by start, then end
+vector&lt;vector&lt;int&gt;&gt; merged;
+for (auto&amp; cur : intervals) {
+    if (merged.empty() || merged.back()[1] &lt; cur[0]) merged.push_back(cur);
+    else merged.back()[1] = max(merged.back()[1], cur[1]);
+}
+return merged;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Backtracking: Subsets</h3><span class="card-tag">Week 18</span><button class="copy" type="button" aria-label="Copy the Backtracking: Subsets code">Copy</button></div><pre><code class="language-cpp">vector&lt;vector&lt;int&gt;&gt; result;
+vector&lt;int&gt; path;
+function&lt;void(int)&gt; backtrack = [&amp;](int start) {
+    result.push_back(path);
+    for (int i = start; i &lt; (int)nums.size(); i++) {
+        path.push_back(nums[i]);           // choose
+        backtrack(i + 1);                  // explore
+        path.pop_back();                   // un-choose
+    }
+};
+backtrack(0);
+return result;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>1D dynamic programming: House Robber</h3><span class="card-tag">Week 19</span><button class="copy" type="button" aria-label="Copy the 1D dynamic programming: House Robber code">Copy</button></div><pre><code class="language-cpp">int n = nums.size();
+// dp[i] = best total from the first i houses
+vector&lt;int&gt; dp(n + 1, 0);
+dp[1] = nums[0];
+for (int i = 2; i &lt;= n; i++)
+    dp[i] = max(dp[i - 1], dp[i - 2] + nums[i - 1]);   // skip or rob house i
+return dp[n];</code></pre></article></div></section><section class="panel" id="pointers" data-section><div class="panel-head"><h2>Pointers: linked lists and trees</h2><span class="tag">Weeks 2 and 6</span></div><p class="intro">LeetCode passes nodes as pointers. Use <code>-&gt;</code> to reach a field through a pointer and <code>.</code> on an object.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>ListNode* node</code></td><td data-label="What it does">Pointer to a node. Can be <code>nullptr</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>node-&gt;val</code> · <code>node-&gt;next</code></td><td data-label="What it does">Read a field through a pointer. <code>node-&gt;val</code> means <code>(*node).val</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>nullptr</code></td><td data-label="What it does">The "no node" value. Don't use <code>NULL</code> or <code>0</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>if (!node)</code></td><td data-label="What it does">True when node is <code>nullptr</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>new ListNode(5)</code></td><td data-label="What it does">Allocate on the heap. LeetCode doesn't need <code>delete</code>; real code does, or uses <code>unique_ptr</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>ListNode dummy(0);</code> <code>ListNode* tail = &amp;dummy;</code></td><td data-label="What it does">Dummy head on the stack. Return <code>dummy.next</code>. No leak and no empty-list special case</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>root-&gt;left</code> · <code>root-&gt;right</code></td><td data-label="What it does">Children of a <code>TreeNode*</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>int&amp; r = x;</code> vs <code>int* p = &amp;x;</code></td><td data-label="What it does">A reference is an alias: never null, never re-pointed. A pointer can be null and can move</td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Reverse Linked List</h3><span class="card-tag">Week 6</span><button class="copy" type="button" aria-label="Copy the Reverse Linked List code">Copy</button></div><pre><code class="language-cpp">ListNode* prev = nullptr;
+ListNode* curr = head;
+while (curr) {
+    ListNode* next = curr-&gt;next;           // save before overwriting
+    curr-&gt;next = prev;
+    prev = curr;
+    curr = next;
+}
+return prev;</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Fast and slow pointers</h3><span class="card-tag">Cycle · middle</span><button class="copy" type="button" aria-label="Copy the Fast and slow pointers code">Copy</button></div><pre><code class="language-cpp">ListNode* slow = head;
+ListNode* fast = head;
+while (fast &amp;&amp; fast-&gt;next) {
+    slow = slow-&gt;next;
+    fast = fast-&gt;next-&gt;next;
+    if (slow == fast) return true;         // Linked List Cycle
+}
+return false;    // with no cycle, slow stops at the middle</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Tree recursion: Max Depth</h3><span class="card-tag">Trees</span><button class="copy" type="button" aria-label="Copy the Tree recursion: Max Depth code">Copy</button></div><pre><code class="language-cpp">int maxDepth(TreeNode* root) {
+    if (!root) return 0;
+    return 1 + max(maxDepth(root-&gt;left), maxDepth(root-&gt;right));
+}</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Level-order BFS</h3><span class="card-tag">Trees</span><button class="copy" type="button" aria-label="Copy the Level-order BFS code">Copy</button></div><pre><code class="language-cpp">vector&lt;vector&lt;int&gt;&gt; levels;
+queue&lt;TreeNode*&gt; q;
+if (root) q.push(root);
+while (!q.empty()) {
+    int levelSize = q.size();
+    vector&lt;int&gt; level;
+    for (int i = 0; i &lt; levelSize; i++) {
+        TreeNode* node = q.front();
+        q.pop();
+        level.push_back(node-&gt;val);
+        if (node-&gt;left) q.push(node-&gt;left);
+        if (node-&gt;right) q.push(node-&gt;right);
+    }
+    levels.push_back(level);
+}
+return levels;</code></pre></article></div></section><section class="panel" id="python" data-section><div class="panel-head"><h2>Python to C++</h2><span class="tag">Coming from Python</span></div><p class="intro">If you think in Python first, this is the translation table.</p><div data-block><div class="table-wrap"><table class="stack labeled"><thead><tr><th>Python</th><th>C++</th><th>Watch out</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Python"><code>len(x)</code></td><td class="t-code" data-label="C++"><code>x.size()</code></td><td data-label="Watch out">Unsigned. Cast with <code>(int)</code> before subtracting</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>x[-1]</code></td><td class="t-code" data-label="C++"><code>x.back()</code></td><td data-label="Watch out">No negative indexes in C++</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>append</code> · <code>pop()</code></td><td class="t-code" data-label="C++"><code>push_back</code> · <code>pop_back()</code></td><td data-label="Watch out"><code>pop_back</code> returns nothing</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>dict</code></td><td class="t-code" data-label="C++"><code>unordered_map</code></td><td data-label="Watch out"><code>m[k]</code> creates a missing key</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>defaultdict(int)</code></td><td class="t-code" data-label="C++"><code>unordered_map&lt;K, int&gt;</code></td><td data-label="Watch out"><code>m[k]++</code> just works</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>defaultdict(list)</code></td><td class="t-code" data-label="C++"><code>unordered_map&lt;K, vector&lt;V&gt;&gt;</code></td><td data-label="Watch out"><code>m[k].push_back(x)</code> just works</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>Counter(s)</code></td><td class="t-code" data-label="C++"><code>int cnt[26] = {}</code> or <code>unordered_map&lt;char, int&gt;</code></td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>set()</code> · <code>x in s</code></td><td class="t-code" data-label="C++"><code>unordered_set</code> · <code>s.count(x)</code></td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>deque</code> · <code>popleft()</code></td><td class="t-code" data-label="C++"><code>deque</code> · <code>pop_front()</code></td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>heapq</code></td><td class="t-code" data-label="C++"><code>priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt;</code></td><td data-label="Watch out">The C++ default is a max-heap</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>sorted(a, key=f)</code></td><td class="t-code" data-label="C++"><code>sort(a.begin(), a.end(), cmp)</code></td><td data-label="Watch out">Sorts in place and returns nothing</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>bisect_left(a, x)</code></td><td class="t-code" data-label="C++"><code>lower_bound(a.begin(), a.end(), x) - a.begin()</code></td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>float('inf')</code></td><td class="t-code" data-label="C++"><code>INT_MAX</code> · <code>LLONG_MAX</code></td><td data-label="Watch out">Adding to <code>INT_MAX</code> overflows</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>for i, x in enumerate(a)</code></td><td class="t-code" data-label="C++"><code>for (int i = 0; i &lt; (int)a.size(); i++)</code></td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>a[::-1]</code></td><td class="t-code" data-label="C++"><code>reverse(a.begin(), a.end())</code></td><td data-label="Watch out">Reverses in place</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>s[i:j]</code></td><td class="t-code" data-label="C++"><code>s.substr(i, j - i)</code></td><td data-label="Watch out">The second argument is a length</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>x // y</code></td><td class="t-code" data-label="C++"><code>x / y</code></td><td data-label="Watch out"><code>-7 / 2</code> is -3 in C++ and -4 in Python</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>tuple</code></td><td class="t-code" data-label="C++"><code>pair</code> · <code>tuple</code> · <code>array&lt;int, 3&gt;</code></td><td data-label="Watch out">All sort and work as <code>map</code>/<code>set</code> keys</td></tr><tr data-entry><td class="t-code" data-label="Python"><code>None</code></td><td class="t-code" data-label="C++"><code>nullptr</code> (pointers) · <code>optional</code> (values)</td><td data-label="Watch out"></td></tr><tr data-entry><td class="t-code" data-label="Python"><code>Ints never overflow</code></td><td class="t-code" data-label="C++"><code>int</code></td><td data-label="Watch out">Overflows past 2,147,483,647. Use <code>long long</code></td></tr></tbody></table></div></div></section><section class="panel" id="big-o" data-section><div class="panel-head"><h2>What each operation costs</h2><span class="tag">Reference</span></div><p class="intro">Per-operation costs, then a rough guide for picking a target complexity from the input size.</p><div data-block><h3 class="block-title">Containers</h3><div class="table-wrap"><table class="stack labeled"><thead><tr><th>Container</th><th>Read</th><th>Find</th><th>Add / remove</th><th>Notes</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Container"><code>vector</code></td><td data-label="Read">O(1) by index</td><td data-label="Find">O(n)</td><td data-label="Add / remove">O(1) at the end, O(n) elsewhere</td><td data-label="Notes">Contiguous memory, fastest to scan</td></tr><tr data-entry><td class="t-code" data-label="Container"><code>string</code></td><td data-label="Read">O(1) by index</td><td data-label="Find">O(n·m) with <code>find</code></td><td data-label="Add / remove">O(1) at the end</td><td data-label="Notes"><code>substr</code> copies, O(len)</td></tr><tr data-entry><td class="t-code" data-label="Container"><code>unordered_map</code> · <code>unordered_set</code></td><td data-label="Read">—</td><td data-label="Find">O(1) average</td><td data-label="Add / remove">O(1) average</td><td data-label="Notes">O(n) worst case. No order</td></tr><tr data-entry><td class="t-code" data-label="Container"><code>map</code> · <code>set</code></td><td data-label="Read">—</td><td data-label="Find">O(log n)</td><td data-label="Add / remove">O(log n)</td><td data-label="Notes">Sorted. <code>lower_bound</code> works</td></tr><tr data-entry><td class="t-code" data-label="Container"><code>priority_queue</code></td><td data-label="Read">O(1), top only</td><td data-label="Find">—</td><td data-label="Add / remove">O(log n)</td><td data-label="Notes">You can only see the top</td></tr><tr data-entry><td class="t-code" data-label="Container"><code>stack</code> · <code>queue</code></td><td data-label="Read">O(1) at the open end</td><td data-label="Find">—</td><td data-label="Add / remove">O(1)</td><td data-label="Notes"></td></tr><tr data-entry><td class="t-code" data-label="Container"><code>deque</code></td><td data-label="Read">O(1)</td><td data-label="Find">O(n)</td><td data-label="Add / remove">O(1) at either end</td><td data-label="Notes"></td></tr></tbody></table></div></div><div data-block><h3 class="block-title">Input size → complexity to aim for</h3><div class="table-wrap"><table class="stack"><thead><tr><th>If n is up to</th><th class="t-cost">Aim for</th><th>Typical approach</th></tr></thead><tbody><tr data-entry><td data-label="If n is up to">12</td><td class="t-cost"><span class="cost slow">O(n!)</span></td><td data-label="Typical approach">Try every permutation</td></tr><tr data-entry><td data-label="If n is up to">25</td><td class="t-cost"><span class="cost slow">O(2ⁿ)</span></td><td data-label="Typical approach">Try every subset, backtracking</td></tr><tr data-entry><td data-label="If n is up to">500</td><td class="t-cost"><span class="cost slow">O(n³)</span></td><td data-label="Typical approach">Three nested loops, some DP</td></tr><tr data-entry><td data-label="If n is up to">5,000</td><td class="t-cost"><span class="cost slow">O(n²)</span></td><td data-label="Typical approach">Two nested loops, 2D DP</td></tr><tr data-entry><td data-label="If n is up to">1,000,000</td><td class="t-cost"><span class="cost mid">O(n log n)</span></td><td data-label="Typical approach">Sort, heap, binary search per element</td></tr><tr data-entry><td data-label="If n is up to">1,000,000</td><td class="t-cost"><span class="cost mid">O(n)</span></td><td data-label="Typical approach">Hash map, two pointers, sliding window</td></tr><tr data-entry><td data-label="If n is up to">Larger than that</td><td class="t-cost"><span class="cost fast">O(log n)</span></td><td data-label="Typical approach">Binary search on the answer, math</td></tr></tbody></table></div></div><p class="note tip"><b>Tip</b>Rule of thumb: about 10⁸ simple operations run in one second.</p></section><section class="panel" id="modern" data-section><div class="panel-head"><h2>Modern C++ for the job</h2><span class="tag">Phase 3 · Weeks 21–29</span></div><p class="intro">LeetCode rarely needs these. Object-oriented design rounds, real C++ projects and C++-specific interview questions do.</p><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>const and references</h3><span class="card-tag">Week 2</span><button class="copy" type="button" aria-label="Copy the const and references code">Copy</button></div><pre><code class="language-cpp">void print(const vector&lt;int&gt;&amp; v);          // read-only, no copy
+void scale(vector&lt;int&gt;&amp; v, int k);         // changes the caller's vector
+int x = 5;
+int&amp; ref = x;                              // alias: ref = 6 changes x
+int* ptr = &amp;x;                             // address: *ptr = 7 changes x
+const int* p1 = &amp;x;                        // can't change *p1
+int* const p2 = &amp;x;                        // can't re-point p2</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Classes</h3><span class="card-tag">Week 4</span><button class="copy" type="button" aria-label="Copy the Classes code">Copy</button></div><pre><code class="language-cpp">class Drone {
+public:
+    explicit Drone(int id) : id_(id), battery_(100) {}   // initializer list
+    ~Drone() = default;                    // runs when the object is destroyed
+    int id() const { return id_; }         // const: doesn't change the object
+    void drain(int pct) { battery_ = max(0, battery_ - pct); }
+
+private:
+    int id_;
+    int battery_;
+};</code></pre></article><article class="card" data-entry><div class="card-head"><h3>RAII</h3><span class="card-tag">Week 21</span><button class="copy" type="button" aria-label="Copy the RAII code">Copy</button></div><pre><code class="language-cpp">// The destructor releases the resource, even if an exception is thrown
+{
+    lock_guard&lt;mutex&gt; lock(m);             // locks here
+    shared.push_back(x);
+}                                          // unlocks here, automatically
+{
+    ifstream file("log.txt");              // opens
+    string line;
+    getline(file, line);
+}                                          // closes</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Smart pointers</h3><span class="card-tag">Week 22</span><button class="copy" type="button" aria-label="Copy the Smart pointers code">Copy</button></div><pre><code class="language-cpp">auto d = make_unique&lt;Drone&gt;(7);            // one owner; freed automatically
+auto d2 = std::move(d);                    // ownership moves; d is now null
+auto grid = make_shared&lt;OccupancyGrid&gt;();  // shared, reference counted
+auto view = grid;                          // both point to the same grid
+// Default to unique_ptr. Use shared_ptr only when ownership is truly shared.</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Move semantics, rule of zero and five</h3><span class="card-tag">Week 23</span><button class="copy" type="button" aria-label="Copy the Move semantics, rule of zero and five code">Copy</button></div><pre><code class="language-cpp">vector&lt;int&gt; big(1'000'000);
+vector&lt;int&gt; taken = std::move(big);        // steals the buffer, no copy
+// big is now valid but unspecified (in practice empty). Don't read it.
+
+// Rule of five: if you write a destructor, copy constructor, copy assignment,
+// move constructor or move assignment, decide about all five.
+// Rule of zero: hold vector, string and unique_ptr members and write none.</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Templates</h3><span class="card-tag">Week 24</span><button class="copy" type="button" aria-label="Copy the Templates code">Copy</button></div><pre><code class="language-cpp">template &lt;typename T&gt;
+T clampTo(T value, T lo, T hi) {
+    return max(lo, min(value, hi));
+}
+// clampTo(15, 0, 10)      -&gt; T is int
+// clampTo(2.5, 0.0, 1.0)  -&gt; T is double
+// std::clamp (C++17) already does this. It's a good first template to write.</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Lambdas and std::function</h3><span class="card-tag">Week 25</span><button class="copy" type="button" aria-label="Copy the Lambdas and std::function code">Copy</button></div><pre><code class="language-cpp">int limit = 50;
+int alerts = 0;
+auto isLow = [limit](int pct) { return pct &lt; limit; };   // copies limit
+auto bump = [&amp;alerts] { alerts++; };                     // references alerts
+function&lt;void(int)&gt; onAlert = [&amp;](int id) { if (isLow(id)) bump(); };
+sort(drones.begin(), drones.end(),
+     [](const Drone&amp; a, const Drone&amp; b) { return a.id() &lt; b.id(); });</code></pre></article><article class="card" data-entry><div class="card-head"><h3>std::optional</h3><span class="card-tag">Week 27</span><button class="copy" type="button" aria-label="Copy the std::optional code">Copy</button></div><p class="card-note">Use exceptions for truly exceptional failures and <code>optional</code> or error codes for expected misses. Many embedded and real-time codebases turn exceptions off.</p><pre><code class="language-cpp">optional&lt;int&gt; findIndex(const vector&lt;int&gt;&amp; v, int x) {
+    for (int i = 0; i &lt; (int)v.size(); i++)
+        if (v[i] == x) return i;
+    return nullopt;                        // "no result," no -1 sentinel
+}
+
+void report(const vector&lt;int&gt;&amp; v) {
+    if (auto idx = findIndex(v, 42)) cout &lt;&lt; "at " &lt;&lt; *idx &lt;&lt; '\n';
+    else cout &lt;&lt; "not found\n";
+}</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Stack, heap and cache</h3><span class="card-tag">Week 28</span><button class="copy" type="button" aria-label="Copy the Stack, heap and cache code">Copy</button></div><pre><code class="language-cpp">int a[100];                                // stack: fast, freed at scope end
+int* b = new int[100];                     // heap: you must free it...
+delete[] b;                                // ...so prefer vector
+vector&lt;int&gt; v;
+v.reserve(n);                              // one allocation instead of many
+// Contiguous memory is cache-friendly: scanning a vector beats a list.
+// Walk a grid row by row (grid[r][c] with c in the inner loop).</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Unit tests with GoogleTest</h3><span class="card-tag">Week 29</span><button class="copy" type="button" aria-label="Copy the Unit tests with GoogleTest code">Copy</button></div><pre><code class="language-cpp">#include &lt;gtest/gtest.h&gt;
+
+TEST(TwoSum, ReturnsSmallerIndexFirst) {
+    vector&lt;int&gt; nums = {3, 4, 5, 6};
+    EXPECT_EQ(twoSum(nums, 7), (vector&lt;int&gt;{0, 1}));
+}</code></pre></article></div></section><section class="panel" id="concurrency" data-section><div class="panel-head"><h2>Concurrency</h2><span class="tag">Phase 4 · Weeks 31–37</span></div><p class="intro">The building blocks for a producer and consumer, such as a drone publishing telemetry to a ground station.</p><div data-block><div class="table-wrap"><table class="calls stack"><thead><tr><th>Code</th><th>What it does</th></tr></thead><tbody><tr data-entry><td class="t-code" data-label="Code"><code>thread t(work, arg);</code></td><td data-label="What it does">Start a thread running <code>work(arg)</code>. Header <code>&lt;thread&gt;</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>t.join();</code></td><td data-label="What it does">Wait for it to finish. Destroying a <code>thread</code> you never joined crashes the program</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>jthread t(work);</code></td><td data-label="What it does">C++20. Joins itself in its destructor</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>mutex m;</code></td><td data-label="What it does">Guards shared data. Header <code>&lt;mutex&gt;</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>lock_guard&lt;mutex&gt; lock(m);</code></td><td data-label="What it does">Locks for the rest of the scope</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>unique_lock&lt;mutex&gt; lock(m);</code></td><td data-label="What it does">Like <code>lock_guard</code>, but can unlock early. Condition variables need it</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>condition_variable cv;</code></td><td data-label="What it does">Lets a thread sleep until something changes. Header <code>&lt;condition_variable&gt;</code></td></tr><tr data-entry><td class="t-code" data-label="Code"><code>cv.wait(lock, [&amp;] { return ready; });</code></td><td data-label="What it does">Sleep until the condition is true. Always pass the condition: wakeups can be spurious</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>cv.notify_one();</code> · <code>cv.notify_all();</code></td><td data-label="What it does">Wake one waiter or all of them</td></tr><tr data-entry><td class="t-code" data-label="Code"><code>atomic&lt;int&gt; count{0};</code></td><td data-label="What it does"><code>count++</code> is safe across threads without a lock. Header <code>&lt;atomic&gt;</code></td></tr></tbody></table></div></div><div class="cards" data-block><article class="card" data-entry><div class="card-head"><h3>Thread-safe queue</h3><span class="card-tag">Week 32</span><button class="copy" type="button" aria-label="Copy the Thread-safe queue code">Copy</button></div><pre><code class="language-cpp">template &lt;typename T&gt;
+class SafeQueue {
+public:
+    void push(T item) {
+        {
+            lock_guard&lt;mutex&gt; lock(m_);
+            q_.push(std::move(item));
+        }
+        cv_.notify_one();
+    }
+
+    T pop() {                              // blocks until an item arrives
+        unique_lock&lt;mutex&gt; lock(m_);
+        cv_.wait(lock, [this] { return !q_.empty(); });
+        T item = std::move(q_.front());
+        q_.pop();
+        return item;
+    }
+
+private:
+    queue&lt;T&gt; q_;
+    mutex m_;
+    condition_variable cv_;
+};</code></pre></article><article class="card" data-entry><div class="card-head"><h3>Producer and consumer</h3><span class="card-tag">Weeks 33–34</span><button class="copy" type="button" aria-label="Copy the Producer and consumer code">Copy</button></div><pre><code class="language-cpp">SafeQueue&lt;Telemetry&gt; q;
+thread drone([&amp;] {
+    for (int i = 0; i &lt; 100; i++) q.push(readSensors());
+});
+thread ground([&amp;] {
+    for (int i = 0; i &lt; 100; i++) process(q.pop());
+});
+drone.join();
+ground.join();</code></pre></article></div></section><section class="panel" id="gotchas" data-section><div class="panel-head"><h2>Gotchas</h2><span class="tag">Skim before each session</span></div><p class="intro">The mistakes that cost the most time. Most of them compile without complaint.</p><div class="traps" data-block><article class="trap" data-entry><h3><code>.size()</code> is unsigned</h3><p><code>v.size() - 1</code> on an empty vector is a huge number, not -1.</p><p class="fix"><b>Fix</b><code>(int)v.size() - 1</code></p></article><article class="trap" data-entry><h3><code>m[k]</code> inserts</h3><p>Checking with <code>if (m[k])</code> adds k with value 0.</p><p class="fix"><b>Fix</b><code>m.count(k)</code> to check</p></article><article class="trap" data-entry><h3><code>pop()</code> returns nothing</h3><p><code>int x = st.pop();</code> won't compile.</p><p class="fix"><b>Fix</b><code>int x = st.top(); st.pop();</code></p></article><article class="trap" data-entry><h3>Empty containers</h3><p><code>top()</code>, <code>front()</code> or <code>back()</code> on an empty container is undefined behavior.</p><p class="fix"><b>Fix</b>Check <code>empty()</code> first</p></article><article class="trap" data-entry><h3><code>int</code> overflow</h3><p><code>int</code> tops out at 2,147,483,647.</p><p class="fix"><b>Fix</b><code>long long</code>, <code>1LL * a * b</code>, <code>l + (r - l) / 2</code></p></article><article class="trap" data-entry><h3><code>max</code> needs matching types</h3><p><code>max(best, v.size())</code> mixes <code>int</code> and an unsigned type.</p><p class="fix"><b>Fix</b><code>max(best, (int)v.size())</code></p></article><article class="trap" data-entry><h3>Accidental copies</h3><p><code>for (auto row : grid)</code> copies each row. A <code>vector&lt;int&gt;</code> parameter copies on every recursive call.</p><p class="fix"><b>Fix</b><code>auto&amp;</code> and <code>const vector&lt;int&gt;&amp;</code></p></article><article class="trap" data-entry><h3>BFS visited timing</h3><p>Marking visited when you pop lets one cell enter the queue many times.</p><p class="fix"><b>Fix</b>Mark when you push</p></article><article class="trap" data-entry><h3>Comparators must use <code>&lt;</code></h3><p><code>&lt;=</code> in a <code>sort</code> comparator is undefined behavior and can crash.</p><p class="fix"><b>Fix</b><code>return a &lt; b;</code></p></article><article class="trap" data-entry><h3><code>accumulate</code> with <code>0</code></h3><p>The sum is computed in <code>int</code> and can overflow.</p><p class="fix"><b>Fix</b><code>accumulate(v.begin(), v.end(), 0LL)</code></p></article><article class="trap" data-entry><h3>No <code>pair</code> keys in <code>unordered_map</code></h3><p>There is no built-in hash for <code>pair</code>.</p><p class="fix"><b>Fix</b><code>map&lt;pair&lt;int, int&gt;, T&gt;</code> or <code>r * cols + c</code></p></article><article class="trap" data-entry><h3><code>multiset::erase(x)</code> removes all</h3><p>Every copy of x disappears.</p><p class="fix"><b>Fix</b><code>ms.erase(ms.find(x))</code></p></article><article class="trap" data-entry><h3><code>s = s + c</code> in a loop</h3><p>Copies the whole string each time, O(n²) overall.</p><p class="fix"><b>Fix</b><code>s += c</code></p></article><article class="trap" data-entry><h3>Deep recursion</h3><p>DFS down a 100,000-node chain can overflow the stack.</p><p class="fix"><b>Fix</b>An explicit <code>stack</code></p></article><article class="trap" data-entry><h3>Uninitialized variables</h3><p><code>int sum;</code> holds garbage, not 0.</p><p class="fix"><b>Fix</b><code>int sum = 0;</code> and <code>int cnt[26] = {};</code></p></article><article class="trap" data-entry><h3><code>bits/stdc++.h</code> on a Mac</h3><p>Apple Clang doesn't ship it.</p><p class="fix"><b>Fix</b>Include the headers you use</p></article><article class="trap" data-entry><h3>Data races</h3><p>One thread writes a variable while another reads it with no lock: undefined behavior.</p><p class="fix"><b>Fix</b>A <code>mutex</code> or <code>atomic</code></p></article></div></section><p class="empty" id="empty" hidden>Nothing matches. Try a shorter word, or press Esc to clear.</p></main>
+  <footer>Week tags suggest a study order from a 52-week interview prep plan. Snippets are C++17 unless marked C++20, and every code card except the two setup examples compiles with Clang.</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script>
+(function () {
+  if (window.hljs) {
+    document.querySelectorAll('pre code').forEach(function (el) { window.hljs.highlightElement(el); });
+  }
+  var input = document.getElementById('filter');
+  var count = document.getElementById('filter-count');
+  var empty = document.getElementById('empty');
+  var entries = Array.prototype.slice.call(document.querySelectorAll('[data-entry]'));
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('[data-block]'));
+  var sections = Array.prototype.slice.call(document.querySelectorAll('section[data-section]'));
+  var texts = entries.map(function (e) { return e.textContent.toLowerCase(); });
+  var total = entries.length;
+
+  function apply() {
+    var q = input.value.trim().toLowerCase();
+    var shown = 0;
+    entries.forEach(function (e, i) {
+      var hit = q === '' || texts[i].indexOf(q) !== -1;
+      e.hidden = !hit;
+      if (hit) shown++;
+    });
+    blocks.forEach(function (b) { b.hidden = q !== '' && !b.querySelector('[data-entry]:not([hidden])'); });
+    sections.forEach(function (s) {
+      var visible = q === '' || !!s.querySelector('[data-entry]:not([hidden])');
+      s.hidden = !visible;
+      var link = document.querySelector('nav.index a[href="#' + s.id + '"]');
+      if (link) link.hidden = !visible;
+    });
+    count.textContent = q === '' ? total + ' entries' : shown + ' of ' + total;
+    empty.hidden = shown !== 0;
+  }
+
+  input.addEventListener('input', apply);
+  input.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape') { input.value = ''; apply(); }
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === '/' && document.activeElement !== input) { ev.preventDefault(); input.focus(); }
+  });
+
+  document.addEventListener('click', function (ev) {
+    var btn = ev.target.closest('.copy');
+    if (!btn) return;
+    var code = btn.closest('.card').querySelector('pre code');
+    var reset = function () { setTimeout(function () { btn.textContent = 'Copy'; }, 1600); };
+    var fallback = function () {
+      var range = document.createRange();
+      range.selectNodeContents(code);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = 'Selected';
+      reset();
+    };
+    try {
+      navigator.clipboard.writeText(code.textContent).then(function () {
+        btn.textContent = 'Copied';
+        reset();
+      }, fallback);
+    } catch (err) {
+      fallback();
+    }
+  });
+
+  apply();
+})();
+</script>
+</body>
+</html>

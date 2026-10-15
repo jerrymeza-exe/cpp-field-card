@@ -5,3 +5,5 @@ A filterable C++ standard library cheat sheet for NeetCode and LeetCode problems
 **View it:** https://jerrymeza-exe.github.io/cpp-field-card/
 
 Press `/` on the page to filter. Every code card except the setup examples compiles with Clang as C++20.
+
+Companion page: [Python Field Card](https://jerrymeza-exe.github.io/python-field-card/)
